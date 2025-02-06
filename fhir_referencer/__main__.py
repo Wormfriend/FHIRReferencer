@@ -1,3 +1,6 @@
-from argparse import ArgumentParser
+from fhir_referencer.parser import ReferenceParser
+from fhir_referencer import argparser
 
-print("hello!")
+args = argparser.parse_args()
+
+refparser = ReferenceParser(args.path)
