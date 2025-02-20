@@ -4,3 +4,4 @@ from fhir_referencer import argparser
 args = argparser.parse_args()
 
 refparser = ReferenceParser(args.path)
+refparser.parse()
