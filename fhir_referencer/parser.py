@@ -65,5 +65,3 @@ class ReferenceParser:
                 parsed.append(transformed)
 
         return parsed
-
-
