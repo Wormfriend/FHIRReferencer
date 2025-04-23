@@ -8,6 +8,8 @@ logger = logging.getLogger()
 class ReferenceParser:
     def __init__(self, profiles_dir: str):
         self.profiles_dir = self.__validate_directory(profiles_dir)
+        self.references: set[tuple[str, str, str]] = set()
+        self.profiles: set[str] = set()
 
     def __validate_directory(self, directory: str) -> Path:
         path = Path(directory)
@@ -20,48 +22,31 @@ class ReferenceParser:
 
         return path
 
-    def __extract(
-        self, filename: Path
-    ) -> list[tuple[str, ...]]:
-        pattern: Pattern = re.compile(
-            r"(?P<profile>^Profile: .*$)\n"
-            r"(?P<parent>^Parent: .*$)", 
-            re.M
-        )
-        results: list[tuple[str, ...]] = []
+    def __extract(self, filename: Path):
+        pattern_profile = re.compile(r"^Profile: *(?P<name>\S*)")
+        pattern_reference = re.compile(r"^\* (?P<field>\S+) .*Reference\((?P<references>.+)\)$")
 
         with open(filename, "r") as fh:
-            file = fh.read()
+            profile = ""
 
-            m = pattern.search(file)
+            for line in fh.readlines():
+                if m:= pattern_profile.match(line):
+                    profile = m.group("name")
+                    self.profiles.add(profile)
 
-            for m in pattern.finditer(file):
-                if m:
-                    results.append(
-                        (str(filename), m.group("profile"), m.group("parent"))
+                elif (m := pattern_reference.match(line)) and profile:
+                    references = list(
+                        map(lambda r: r.strip(), m.group("references").split("or"))
                     )
+                    field = m.group("field")
 
-        return results
-    
-    def __transform(self, result: tuple[str, ...]) -> tuple[str, ...]:
-        pattern = re.compile(r"^.*:")
-        result = tuple(
-            map(
-                lambda s:  pattern.sub("", s), 
-                result[1:]
-            )
-        )
+                    for reference in references:
+                        self.references.add((profile, reference, field))
 
-        return result
-
-    def parse(self) -> list[tuple[str, ...]]:
+    def parse(self) -> tuple[set[str], set[tuple[str, str, str]]]:
         parsed: list[tuple[str, ...]] = []
 
         for file in self.profiles_dir.glob("**/*.fsh"):
-            extracted = self.__extract(file)
+            self.__extract(file)
 
-            for result in extracted:
-                transformed = self.__transform(result)
-                parsed.append(transformed)
-
-        return parsed
+        return self.profiles, self.references
