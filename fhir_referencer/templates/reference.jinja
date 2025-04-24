@@ -1,0 +1,12 @@
+@startuml {{ diagram_name }}
+
+!$colors = {{ colors|tojson }}
+
+legend right
+    |Color|Type|
+    {% for row in legend %}
+        |{{ row.color }}|{{ row.parent }}|
+    {% endfor %}
+endlegend
+
+@enduml
