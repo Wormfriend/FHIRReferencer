@@ -1,16 +1,17 @@
 from pathlib import Path
-# from re import Pattern
 import logging
 import json
-# import re
+import re
+
 
 logger = logging.getLogger()
+
 
 class ReferenceParser:
     def __init__(self, profiles_dir: str, resources_dir: str):
         self.resources_dir = self.__validate_directory(resources_dir)
         self.profiles_dir = self.__validate_directory(profiles_dir)
-        self.logical_map: dict[str, str] = {}
+        self.logical_map: dict[str, tuple[str, ...]] = {}
         self.profiles: list[dict] = []
 
     def __validate_directory(self, directory: str) -> Path:
@@ -24,52 +25,19 @@ class ReferenceParser:
 
         return path
 
-    # def __extract(self, filename: Path):
-    #     pattern_profile = re.compile(r"^Profile: +(?P<name>\S*)")
-    #     pattern_reference = re.compile(
-    #         r"^[ \t]*\* (?P<field>\S+) only Reference\((?P<references>.*?)\)",
-    #         flags=re.M | re.S,
-    #     )
-    #     file = ""
-
-    #     with open(filename, "r") as fh:
-    #         file = fh.read()
-
-    #     profiles = list(pattern_profile.finditer(file))
-    #     references = list(pattern_reference.finditer(file))
-    #     pass
-        # with open(filename, "r") as fh:
-        #     profile = ""
-
-        #     for line in fh.readlines():
-        #         # line = re.escape(line)
-
-        #         if m:= pattern_profile.match(line):
-        #             profile = m.group("name")
-        #             self.profiles.add(profile)
-
-        #         elif (m := pattern_reference.match(line)) and profile:
-        #             references = list(
-        #                 map(lambda r: r.strip(), m.group("references").split(" or "))
-        #             )
-        #             field = m.group("field")
-
-        #             for reference in references:
-        #                 self.references.add((profile, reference, field))
-
-    # def __cleanup(self):
-    #     marked: list[tuple[str, str, str]] = []
-
-    #     for triplet in self.references:
-    #         if not triplet[1] in self.profiles:
-    #             marked.append(triplet)
-
-    #     for t in marked:
-    #         self.references.remove(t)
-
     def __extract_logical_structure(self):
+        pattern = re.compile(r"^Id: +(?P<id>\S+)", flags=re.M)
+        logical_map = {}
+
         for file in self.profiles_dir.glob("**/*.fsh"):
-            pass
+            text = file.read_text()
+            path = file.parent.parts
+                    
+            for m in pattern.finditer(text):
+                if m:
+                    logical_map[m.group("id")] = path
+
+        self.logical_map = logical_map
 
     def __load_profiles_and_resources(self):
         for file in self.resources_dir.glob("*.json"):
@@ -95,12 +63,8 @@ class ReferenceParser:
 
                 self.profiles.append(profile)
 
-    def parse(self) -> tuple[list[dict], dict[str, str]]:
+    def parse(self) -> tuple[list[dict], dict[str, tuple[str, ...]]]:
         self.__load_profiles_and_resources()
-        # for file in self.profiles_dir.glob("**/*.fsh"):
-        #     self.__extract(file)
-            # self.__extract(file)
-
-        # self.__cleanup()
+        self.__extract_logical_structure()
 
         return self.profiles, self.logical_map
