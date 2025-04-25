@@ -2,7 +2,7 @@
 
 ## Description
 
-This is a small CLI helper for creating plantUML references diagrams for FHIR resources.
+This is a small CLI helper for creating plantUML reference diagrams for FHIR resources.
 Before you get started run ```sushi``` to create the necessary resource json-files.
 
 ## Instruction
