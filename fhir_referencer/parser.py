@@ -1,3 +1,4 @@
+from pydantic import BaseModel
 from pathlib import Path
 import logging
 import json
@@ -7,12 +8,20 @@ import re
 logger = logging.getLogger()
 
 
+class Profile(BaseModel):
+    name: str
+    id: str
+    url: str
+    type: str
+    references: dict[str, list[str]]
+
+
 class ReferenceParser:
     def __init__(self, profiles_dir: str, resources_dir: str):
         self.resources_dir = self._validate_directory(resources_dir)
         self.profiles_dir = self._validate_directory(profiles_dir)
         self.logical_map: dict[str, tuple[str, ...]] = {}
-        self.profiles: list[dict] = []
+        self.profiles: list[Profile] = []
 
     def _validate_directory(self, directory: str) -> Path:
         path = Path(directory)
@@ -61,9 +70,9 @@ class ReferenceParser:
                             if "code" in t and t["code"] == "Reference":
                                 profile["references"][element["path"]] = t["targetProfile"]
 
-                self.profiles.append(profile)
+                self.profiles.append(Profile(**profile))
 
-    def parse(self) -> tuple[list[dict], dict[str, tuple[str, ...]]]:
+    def parse(self) -> tuple[list[Profile], dict[str, tuple[str, ...]]]:
         self._load_profiles_and_resources()
         self._extract_logical_structure()
 

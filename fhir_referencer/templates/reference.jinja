@@ -2,6 +2,7 @@
 
 !$colors = {{ colors|tojson }}
 
+{#
 legend right
     |Color|Type|
     {% for row in legend %}
@@ -9,4 +10,15 @@ legend right
     {% endfor %}
 endlegend
 
+{% for package in packages %}
+package {{ package.name }} <<Rectangle>> {
+    {% for object in package.objects %}
+        object {{ object.name }} {{ object.color }}
+    {% endfor %}
+}
+{% endfor %}
+{% for reference in references %}
+{{ reference.source }} --> {{ reference.destination }} : {{ reference.field }}
+{% endfor %}
+#}
 @enduml
