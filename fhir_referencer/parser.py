@@ -9,12 +9,12 @@ logger = logging.getLogger()
 
 class ReferenceParser:
     def __init__(self, profiles_dir: str, resources_dir: str):
-        self.resources_dir = self.__validate_directory(resources_dir)
-        self.profiles_dir = self.__validate_directory(profiles_dir)
+        self.resources_dir = self._validate_directory(resources_dir)
+        self.profiles_dir = self._validate_directory(profiles_dir)
         self.logical_map: dict[str, tuple[str, ...]] = {}
         self.profiles: list[dict] = []
 
-    def __validate_directory(self, directory: str) -> Path:
+    def _validate_directory(self, directory: str) -> Path:
         path = Path(directory)
 
         if not path.exists():
@@ -25,7 +25,7 @@ class ReferenceParser:
 
         return path
 
-    def __extract_logical_structure(self):
+    def _extract_logical_structure(self):
         pattern = re.compile(r"^Id: +(?P<id>\S+)", flags=re.M)
         logical_map = {}
 
@@ -39,7 +39,7 @@ class ReferenceParser:
 
         self.logical_map = logical_map
 
-    def __load_profiles_and_resources(self):
+    def _load_profiles_and_resources(self):
         for file in self.resources_dir.glob("*.json"):
             data = json.loads(file.read_text())
             
@@ -64,7 +64,7 @@ class ReferenceParser:
                 self.profiles.append(profile)
 
     def parse(self) -> tuple[list[dict], dict[str, tuple[str, ...]]]:
-        self.__load_profiles_and_resources()
-        self.__extract_logical_structure()
+        self._load_profiles_and_resources()
+        self._extract_logical_structure()
 
         return self.profiles, self.logical_map
