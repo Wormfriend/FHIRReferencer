@@ -19,6 +19,7 @@ class ReferenceRenderer:
         self.profiles = profiles
 
         self._set_unique_types()
+        self._set_references()
         self._set_packages()
         self._set_colormap()
 
@@ -33,6 +34,20 @@ class ReferenceRenderer:
     def _set_packages(self):
         packages = self._create_packages()
         self.packages = packages
+
+    def _set_references(self):
+        references = self._create_references()
+        self.references = references
+
+    def _get_profile_by_url(self, url: str) -> Profile | None:
+        output: Profile | None = None
+
+        for profile in self.profiles:
+            if url == profile.url:
+                output = profile
+                break
+
+        return output
 
     def _create_colormap(self) -> dict[str, str]:
         n_types = len(self.unique_types)
@@ -55,6 +70,24 @@ class ReferenceRenderer:
 
         return packages
 
+    def _create_references(self) -> list[dict[str, str]]:
+        references: list[dict[str, str]] = []
+
+        for profile in self.profiles:
+            for field, urls in profile.references.items():
+
+                for url in urls:
+                    if linked_profile := self._get_profile_by_url(url):
+                        references.append(
+                            {
+                                "source": profile.name,
+                                "destination": linked_profile.name,
+                                "field": field,
+                            }
+                        )
+
+        return references
+
     def render(self) -> str:
         env = Environment(
             loader=PackageLoader("fhir_referencer"),
@@ -64,7 +97,8 @@ class ReferenceRenderer:
         puml = tmp.render(
             diagram_name=self.diagram_name, 
             colors=self.colormap, 
-            packages=self.packages
+            packages=self.packages,
+            references=self.references
         )
 
         return puml
