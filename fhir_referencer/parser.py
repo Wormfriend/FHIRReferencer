@@ -26,7 +26,7 @@ class ReferenceParser:
         path = Path(directory)
 
         if not path.exists():
-            raise FileExistsError(f"Directory '{directory}' does not exists")
+            raise FileNotFoundError(f"Directory '{directory}' does not exists")
 
         if not path.is_dir():
             raise ValueError(f"'{directory}' is not a directory")
