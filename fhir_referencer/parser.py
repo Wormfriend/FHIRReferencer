@@ -5,9 +5,6 @@ import json
 import re
 
 
-logger = logging.getLogger()
-
-
 class Profile(BaseModel):
     name: str
     id: str
