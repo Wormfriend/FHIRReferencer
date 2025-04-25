@@ -14,6 +14,6 @@ Before you get started run ```sushi``` to create the necessary resource json-fil
 ```bash
 python -m fhir_referencer -p {directory containing the .fsh-profiles} \
 -r {directory containing the json resources aka sushi output} \
--o {filename of the plantuml (pu) output file}
+-o {filename of the plantuml (pu) output file} \
 -n {name of the diagram after rendering also the filename}
 ```
