@@ -69,7 +69,7 @@ class ReferenceParser:
                         for t in _type:
 
                             if "code" in t and t["code"] == "Reference":
-                                profile["references"][element["path"]] = t["targetProfile"]
+                                profile["references"][element["id"]] = t["targetProfile"]
 
                 profiles.append(profile)
 

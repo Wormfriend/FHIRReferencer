@@ -21,5 +21,4 @@ package {{ key }} <<Rectangle>> {
 {%- for reference in references -%}
 {{ reference.source }} --> {{ reference.destination }} : {{ reference.field }}
 {% endfor %}
-
 @enduml
