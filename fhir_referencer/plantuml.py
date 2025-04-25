@@ -12,6 +12,7 @@ class ReferenceRenderer:
         diagram_name: str
     ):
         self.packages: dict[str, list[dict[str, str]]] = {}
+        self.references: list[dict[str, str]] = []
         self.template_name: str = template_name
         self.diagram_name: str = diagram_name
         self.unique_types: set[str] = set()
@@ -68,7 +69,7 @@ class ReferenceRenderer:
             obj = {"name": profile.name, "type": profile.type}            
             packages[profile.package].append(obj)
 
-        return packages
+        return dict(packages)
 
     def _create_references(self) -> list[dict[str, str]]:
         references: list[dict[str, str]] = []
