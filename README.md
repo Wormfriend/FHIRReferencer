@@ -17,3 +17,9 @@ python -m fhir_referencer -p {directory containing the .fsh-profiles} \
 -o {filename of the plantuml (pu) output file} \
 -n {name of the diagram after rendering also the filename}
 ```
+
+## Enhancement Proposals
+
+- Add support for different types of relationship diagrams
+- Add logging
+- Add better error handling
