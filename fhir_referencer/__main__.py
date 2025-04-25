@@ -5,10 +5,10 @@ from fhir_referencer import argparser
 args = argparser.parse_args()
 
 refparser = ReferenceParser(args.profiles, args.resources)
-profiles, logical_map = refparser.parse()
+profiles = refparser.parse()
 
 renderer = ReferenceRenderer(
-    profiles, logical_map, "reference.jinja", args.diagram_name
+    profiles, "reference.jinja", args.diagram_name
 )
 puml = renderer.render()
 

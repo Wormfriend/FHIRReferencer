@@ -2,21 +2,23 @@
 
 !$colors = {{ colors|tojson }}
 
-{#
 legend right
     |Color|Type|
-    {% for row in legend %}
-        |{{ row.color }}|{{ row.parent }}|
+    {% for type in colors -%}
+    |<$colors.{{ type }}>|{{ type }}|
     {% endfor %}
 endlegend
 
-{% for package in packages %}
-package {{ package.name }} <<Rectangle>> {
-    {% for object in package.objects %}
-        object {{ object.name }} {{ object.color }}
+{% for key in packages -%}
+package {{ key }} <<Rectangle>> {
+    {% for object in packages[key] -%}
+    object {{ object.name }} $colors.{{ object.type }}
     {% endfor %}
 }
+
 {% endfor %}
+
+{#
 {% for reference in references %}
 {{ reference.source }} --> {{ reference.destination }} : {{ reference.field }}
 {% endfor %}
